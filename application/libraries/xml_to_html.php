@@ -12,7 +12,8 @@ class Xml_to_html {
   private $xslt           = NULL; // DomDocument
   private $xsltProc       = NULL; // XSLTProcessor
   private $xpath          = NULL; // XPath
-  private $xmlDTD         = NULL; // XML DTD not used
+  private $xmlDTD         = NULL; // XML DTD
+  private $CI             = NULL; // Code Igniter
 
 
   /**
@@ -21,17 +22,18 @@ class Xml_to_html {
   public function Xml_to_html(array $config = array()) {
 
     //Loading the config
-    $this->xsl_path = $config['xsl_path'];
-    $this->tags     = $config['tags'];
+    $this->xsl_path  = $config['xsl_path'];
+    $this->dtd_path  = $config['dtd_path'];
+    $this->tags      = $config['tags'];
+    $this->skip_tags = $config['skip_tags']; 
+    
+    $this->CI =& get_instance();
+    $this->CI->load->library('Typography');
 
     $this->xmlImp = new DOMImplementation();
     
-    //Later...
-    //$this->xmlDTD = $this->xmlImp->createDocumentType('lpcode');//, '', 'application/helpers/lpcode.dtd');
+    $this->xmlDTD = $this->xmlImp->createDocumentType('code', '', $this->dtd_path);
     
-   /* $this->xmlDoc = $this->xmlImp->createDocument('', 'lpcode');//, $this->xmldtd);
-    $this->xmlDoc->encoding = 'UTF-8';
-    $this->xmlDoc->formatOutput = true;*/
 
     $this->xslt = new DomDocument();
     $this->xslt->load($this->xsl_path);
@@ -60,7 +62,7 @@ class Xml_to_html {
     $data = $this->_prettify($data);
 
     $xml = $this->xmlDoc->createDocumentFragment();
-    
+
     //We convert it into a DOM node...
     if(!$xml->appendXML($data)) {
       return 'Erreur de parsage <br/><pre>'.htmlspecialchars($data).'</pre>';
@@ -68,7 +70,17 @@ class Xml_to_html {
     
     //... and append it to the document.
     $this->xmlDoc->documentElement->appendChild($xml);
-
+    
+    //DEBUG
+    //echo $this->xmlDoc->saveXML();
+    
+    if($this->xmlDoc->validate())
+      echo '<p>Le document XML est valide par rapport à la DTD</p>';
+    else 
+      echo '<p style="color:red">Le document XML n\'a pu être chargé !</p>';
+    
+    
+    
     // Then we parse it.
     return $this->_apply_xsl();
   }
@@ -95,13 +107,8 @@ class Xml_to_html {
    * return void
    */
   private function _cleanDom() {
-  
-   /* if($this->xmlDoc != NULL) {
-      foreach( $this->xmlDoc->childNodes as $child)
-        $this->xmlDoc->removeChild($child);
-    }*/
     
-    $this->xmlDoc = $this->xmlImp->createDocument('', 'code');//, $this->xmldtd);
+    $this->xmlDoc = $this->xmlImp->createDocument('', 'code', $this->xmlDTD);
     $this->xmlDoc->encoding = 'UTF-8';
     $this->xmlDoc->formatOutput = true;
   }
@@ -137,9 +144,53 @@ class Xml_to_html {
       $reg = "#&lt;(" . $this->tags . ")((?:\s+[\w]*?=\"[\s\S]*?\")+) */&gt;#i";
       while(preg_match($reg, $data)) {
         $data = preg_replace($reg, '<$1$2/>', $data );
-    }
+      }
 
+    //We delete all the newlines that we don't want.
+		$data = preg_replace("#\n\n+#", "\n\n", $data);
+		//DEBUG
+		//echo $data;
+		$data = $this->_format($data);
+    //DEBUG
+    //echo $data;
     return $data;
+  }
+  
+  
+  /**
+   * Format
+   *
+   * Remove somes new lines and wrap text with <p>...</p> when necessary.
+   *
+   * @access private
+   * @param string
+   * @return string
+   */
+  private function _format($str) {
+    $reg = "#\s*(<(" . $this->skip_tags . ")(?:(?:\s+[\w]*?=\"[\s\S]*?\")+)?>(?:[\s\S]*?)</\\2>)\s*#i";
+    $data = preg_split($reg, $str, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+   
+    //DEBUG
+    //var_dump($data);
+    
+    $str = '';
+    for($i = 0; $i < count($data); $i++) {
+    
+      //We don't wrap !!
+      if(preg_match("#<(" . $this->skip_tags . ")#i", $data[$i])) {
+        $str .= $data[$i];
+        $i++;
+      } else {
+        //We wrap the data :
+        $s = trim($data[$i]);
+        $s = preg_replace("#\n\n#", "</p><p>", $s);
+		    $s = preg_replace("#\n#", "<br />", $s);
+        $str .= '<p>' . $s . '</p>';
+      }
+    
+    }
+   
+    return $str;
   }
 
 }

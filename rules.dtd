@@ -1,0 +1,35 @@
+
+<!ENTITY % phrase "i|g|s|b">
+
+<!ENTITY % heading "titre|stitre">
+
+<!ENTITY % block "citation|%heading;|liste|puce">
+
+<!ENTITY % inline "cite|%phrase;">
+
+<!-- ROOT -->
+<!ELEMENT code (#PCDATA | %inline; | %block; | %heading; | br | p)*>
+
+<!ELEMENT br EMPTY>
+<!ELEMENT p ANY>
+
+<!-- HEADING -->
+<!ELEMENT titre (#PCDATA)>
+<!ELEMENT stitre (#PCDATA)>
+
+<!-- FORMAT TEXT -->
+<!ELEMENT i ANY>
+<!ELEMENT b ANY>
+<!ELEMENT g ANY>
+<!ELEMENT s ANY>
+
+<!-- QUOTES -->
+<!ELEMENT cite ANY>
+<!ELEMENT citation ANY>
+
+<!-- LISTS -->
+<!ELEMENT liste (puce)+>
+<!ATTLIST liste type CDATA "default">
+
+<!ELEMENT puce ANY>
+<!ATTLIST puce nom CDATA #IMPLIED>

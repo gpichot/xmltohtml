@@ -1,0 +1,63 @@
+
+/* FORMAT TEXT */
+.underline{
+  text-decoration: underline;
+}
+.strike{
+  text-decoration: line-through;
+}
+
+
+/* QUOTES */
+blockquote:before{
+  content: open-quote;
+}
+blockquote:after{
+  content: close-quote;
+}
+blockquote:lang(fr), q:lang(fr) {
+  quotes: "«" "»" "«" "»";
+}
+
+/* LISTS */
+dt{
+  font-weight: bold;
+}
+dt:after{
+  content: ' :';
+}
+dt, dd {
+  margin: 0;
+  padding: 0;
+}
+dt{
+  margin-left: 20px;
+}
+dt {
+  float: left;
+  margin-right: 0.3em;
+}
+
+.list-lower-greek{
+  list-style-type: lower-greek;
+}
+.list-decimal{
+  list-style-type: decimal;
+}
+.list-lower-roman{
+  list-style-type: lower-roman;
+}
+.list-upper-roman{
+  list-style-type: upper-roman;
+}
+.list-lower-alpha{
+  list-style-type: lower-alpha;
+}
+.list-upper-alpha{
+  list-style-type: upper-alpha;
+}
+.list-decimal-leading-zero{
+  list-style-type: decimal-leading-zero;
+}
+
+

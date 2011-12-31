@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
 	<meta charset="utf-8">
 	<title>Welcome to CodeIgniter</title>
-
+  <link rel="stylesheet" type="text/css" href="rules.css" />
 	<style type="text/css">
 
 	::selection{ background-color: #E13300; color: white; }
@@ -59,6 +59,8 @@
 	
 	#container{
 		margin: 10px;
+		margin:auto;
+		width: 600px;
 		border: 1px solid #D0D0D0;
 		-webkit-box-shadow: 0 0 8px #D0D0D0;
 	}
@@ -68,15 +70,9 @@
 
 <div id="container">
 	<h1>Welcome to CodeIgniter!</h1>
-
 	<div id="body">
 	
-	  <pre><?php echo htmlentities($string); ?></pre>
-	  has been parse to : <br />
-	  <?php echo $string_parsed; ?>
-	  <pre><?php echo htmlentities($string2); ?></pre>
-	  has been parse to : <br />
-	  <?php echo $string2_parsed; ?>
+	 <?php echo $string_parsed; ?>
 	</div>
 
 	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds and memory : <strong>{memory_usage}</strong></p>
